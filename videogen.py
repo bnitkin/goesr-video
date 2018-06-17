@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # Simple script to turn a bunch of photos into a video
-import sys, glob, subprocess
+import os, sys, glob, subprocess
 
 FRAMES = 15*24*2 # 2 days of data
 FRAMERATE = '8' # frames per second (real time is four frames per hour)
@@ -23,12 +23,16 @@ def main():
         '-pix_fmt', 'yuv420p',         # Force older pixel format to make Firefox happy.
         '-c:v', 'libvpx-vp9',
         '-crf', '30', '-b:v', '0',     # Constant quality (31 is suggested for 1080p)
-        DEST.format(sys.argv[1])), stdin=subprocess.PIPE)  # Write to DEST
+        '/tmp/video-{}.webm'.format(sys.argv[1])), stdin=subprocess.PIPE)  # Write to a tempfile
 
     for path in files:
         with open(path, 'rb') as image:
             ffmpeg.stdin.write(image.read())
     ffmpeg.stdin.close()
     ffmpeg.wait()
+
+    # Finally, move to the output area. 
+    # This ensures that the final move is atomic, and reduces web-frontend screwups.
+    os.rename('/tmp/video-{}.webm'.format(sys.argv[1]), DEST.format(sys.argv[1]))
 
 main()
