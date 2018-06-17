@@ -1,13 +1,14 @@
 # Remove jpg files in /home/bnitkin/goesr that are more than a week old.
-15 3 * * *   bnitkin  find /home/bnitkin/goesr -ctime +80 -iname '*.jpg' -exec rm {} \; &>> /home/bnitkin/find.txt
+15 3 * * *   bnitkin  find /home/bnitkin/goesr -ctime +80 -iname '*.jpg' -exec rm {} \; >> /home/bnitkin/find.txt 2>&1
 # Automatically restart the service if it crashes.
-*/5 * * * *   bnitkin  pidof -x GOES16.sci.py >/dev/null || /home/bnitkin/GOES16.sci.py &>> /home/bnitkin/log.txt
+*/5 * * * *   bnitkin  pidof -x GOES16.sci.py >/dev/null || /home/bnitkin/GOES16.sci.py >> /home/bnitkin/log.txt 2>&1
 # Automatically restart the HTTP server if it crashes. (Must be root to permit binding to port 80.)
-*/5 * * * *   root     pidof -x goesServer.py >/dev/null || cd /home/bnitkin; /home/bnitkin/goesServer.py &>> /home/bnitkin/server.txt
+*/5 * * * *   root     pidof -x goesServer.py >/dev/null || (cd /home/bnitkin; /home/bnitkin/goesServer.py >> /home/bnitkin/server.txt 2>&1)
 # Use Make to automatically detect when files change. Updating every few minutes ensures low lag.
-*/5 * * * *   bnitkin  nice -n8 make -f /home/bnitkin/video.mk TIME=day     &>> /home/bnitkin/video.txt
-*/5 * * * *   bnitkin  nice -n8 make -f /home/bnitkin/video.mk TIME=two-day &>> /home/bnitkin/video.txt
+# Staggering helps balance CPU load - this is a very saturated machine.
+*/5 * * * *   bnitkin             nice -n8 make -f /home/bnitkin/video.mk TIME=day     >> /home/bnitkin/video.txt 2>&1
+*/5 * * * *   bnitkin  sleep 150; nice -n8 make -f /home/bnitkin/video.mk TIME=two-day >> /home/bnitkin/video.txt 2>&1
 # Rebuild longer videos less often (weekly is hourly; monthly is daily; annual is weekly)
-33  * * * *   bnitkin  nice -n10 make -f /home/bnitkin/video.mk TIME=week   &>> /home/bnitkin/video.txt
-48  1 * * tue bnitkin  nice -n15 make -f /home/bnitkin/video.mk TIME=month  &>> /home/bnitkin/video.txt
-12  1 5 * *   bnitkin  nice -n15 make -f /home/bnitkin/video.mk TIME=year   &>> /home/bnitkin/video.txt
+33  * * * *   bnitkin  nice -n10 make -f /home/bnitkin/video.mk TIME=week   >> /home/bnitkin/video.txt 2>&1
+48  1 * * tue bnitkin  nice -n15 make -f /home/bnitkin/video.mk TIME=month  >> /home/bnitkin/video.txt 2>&1
+12  1 5 * *   bnitkin  nice -n15 make -f /home/bnitkin/video.mk TIME=year   >> /home/bnitkin/video.txt 2>&1

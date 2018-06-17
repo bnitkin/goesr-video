@@ -48,7 +48,8 @@ body {
 	height:100%;
 	background-color:black;
        	padding:0;
-       	margin:0
+       	margin:0;
+	display:grid;
 }
 div {
 	font-family:sans;
@@ -63,13 +64,10 @@ div.right  { right: 0px; text-align: right; }
 div.left   { left:  0px; text-align: left; }
 video {
 	object-fit:contain;
-       	max-width:100%;
-       	max-height:100%;
+       	max-width: 97%;
+       	max-height:97%;
        	display:block;
-       	margin:0 auto;
-	padding-top: 5px;
-	padding-bottom: 5px;
-	
+       	margin:auto;
 }
 #goes-video-hidden {display:none}
 a:hover, a:visited, a:link, a:active{
@@ -90,6 +88,7 @@ a:hover {
 	       	<a href=# onclick="clearTimeout(timer); interval=450;    video.src='goesr/video-day.webm?0'; updateVideo()">day</a>
 		<a href=# onclick="clearTimeout(timer); interval=450;    video.src='goesr/video-two-day.webm?0'; updateVideo()">48 hours</a>
 		<a href=# onclick="clearTimeout(timer); interval=3600;   video.src='goesr/video-week.webm?0'; updateVideo()">week</a>
+		<a href=# onclick="clearTimeout(timer); interval=3600;   video.src='goesr/video-month.webm?0'; updateVideo()">month</a>
 		<a href=# onclick="clearTimeout(timer); interval=604800; video.src='goesr/video-year.webm?0'; updateVideo()">year</a>
 	</div>
 	<div class="top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
