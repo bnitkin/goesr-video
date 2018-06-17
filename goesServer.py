@@ -1,7 +1,7 @@
 #!/usr/bin/python3 -u
 # Simple HTTP server brings up the video and not much else.
 from http.server  import HTTPServer, SimpleHTTPRequestHandler
-from SocketServer import ThreadingMixIn
+from socketserver import ThreadingMixIn
 
 class ThreadingServer(ThreadingMixIn, HTTPServer):
         pass

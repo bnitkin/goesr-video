@@ -29,20 +29,22 @@ div {
 	font-family:sans;
 	color: white;
 	position:fixed;
-	width:100%
+	width:50%
 }
 
 div.top    { top:   0px; }
 div.bottom { bottom:0px; }
-div.right {  text-align: right; }
-div.left {   text-align: left; }
+div.right  { right: 0px; text-align: right; }
+div.left   { left:  0px; text-align: left; }
 
 video {
 	object-fit:contain;
        	max-width:100%;
        	max-height:100%;
        	display:block;
-       	margin:0 auto
+       	margin:0 auto;
+	padding-top: 5px;
+	
 }
 a:hover, a:visited, a:link, a:active{
 	color: white;
@@ -59,16 +61,16 @@ a:hover {
 </head>
 <body>
 	<div class="top left">
-		Change duration: <a href=# onclick="clearInterval(timer); interval=450;    timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-day.mp4'">daily</a>
-		<a href=# onclick="clearInterval(timer); interval=450;    timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-two-day.mp4'">two day</a>
+		duration: <a href=# onclick="clearInterval(timer); interval=450;    timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-day.mp4'">day</a>
+		<a href=# onclick="clearInterval(timer); interval=450;    timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-two-day.mp4'">48 hours</a>
 		<a href=# onclick="clearInterval(timer); interval=3600;   timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-week.mp4'">week</a>
 		<a href=# onclick="clearInterval(timer); interval=604800; timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-year.mp4'">year</a>
 	</div>
 	<div class="top right">
-		Brought to you by <a href=nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a>
+		brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a>
 	</div>
-	<div class="bottom left">Data sourced from <a href="https://www.goes-r.gov/">GOES-R</a></div>
-	<div class="bottom right">hi there</div>
+	<div class="bottom left">data via <a href="https://www.goes-r.gov/">GOES-R</a></div>
+	<div class="bottom right"><a href=https://github.com/bnitkin/goesr-video>source</a></div>
 	<video autoplay loop >
 		<source id=goes-video src="goesr/video-two-day.mp4" type="video/mp4">
 			Your browser does not appear to be HTML5 capable. (Video tag support is missing.) Please try with a newer browser.
