@@ -6,31 +6,39 @@ When the interval runs out, updateVideo() downloads the latest copy of the anima
 goes-video-hidden. Once goes-video-hidden is fully loaded, the src is transferred into goes-video.
 The switcharoo prevents the main video pane from going black during reloads. -->
 <script>
-var video = 0
+var video = 0;
+var hidden= 0;
 var interval = 450; // 7.5 minutes
-var timer = 0
+var timer = 0;
+var loading = 0;
 
-function updateVideo() {
+function updateVideo(src) {
+	src = src || video.src;
 	console.log('Interval:', interval);
 	console.log('Video:   ', video.src);
-	hidden.src = video.src.split("?")[0] + "?" + new Date().getTime();
-	console.log('Reloading video:', video.src);
+	hidden.src = src.split("?")[0] + "?" + new Date().getTime();
+	console.log('Reloading video:', hidden.src);
 	timer = setTimeout(updateVideo, interval*1000);
-	console.log('Done');
+	loading.innerHTML = 'Loading '+hidden.src.split('?')[0]
+	loading.style.visibility = 'visible';
+	console.log('Downloading');
 }
 
 window.onload = function() {
 	console.log('In onload function');
-	video  = document.getElementById("goes-video");
+	video   = document.getElementById("goes-video");
 	hidden  = document.getElementById("goes-video-hidden");
+	loading = document.getElementById("loading");
 	timer = setTimeout(updateVideo, interval*1000);
 	console.log('Timer:', timer);
+	loading.style.visibility = 'hidden';
 
 	//When the main video is ready, play it.
 	video.addEventListener('loadeddata', function() {
 			if(video.readyState == 4) {
 			console.log('Playing video:', video.src);
 			video.play();
+			loading.style.visibility = 'hidden';
 			}
 			});
 
@@ -62,6 +70,7 @@ div.top    { top:   0px; }
 div.bottom { bottom:0px; }
 div.right  { right: 0px; text-align: right; }
 div.left   { left:  0px; text-align: left; }
+span       { padding-right:5px; }
 video {
 	object-fit:contain;
        	max-width: 97%;
@@ -85,15 +94,16 @@ a:hover {
 <body>
 	<div class="top left">
 		duration:
-	       	<a href=# onclick="clearTimeout(timer); interval=450;    video.src='goesr/video-day.webm?0'; updateVideo()">day</a>
-		<a href=# onclick="clearTimeout(timer); interval=450;    video.src='goesr/video-two-day.webm?0'; updateVideo()">48 hours</a>
-		<a href=# onclick="clearTimeout(timer); interval=3600;   video.src='goesr/video-week.webm?0'; updateVideo()">week</a>
-		<a href=# onclick="clearTimeout(timer); interval=3600;   video.src='goesr/video-month.webm?0'; updateVideo()">month</a>
-		<a href=# onclick="clearTimeout(timer); interval=604800; video.src='goesr/video-year.webm?0'; updateVideo()">year</a>
+	       	<a href=/static.html>                                                                               latest</a>
+	       	<a href=# onclick="clearTimeout(timer); interval=450;    updateVideo('goesr/video-day.webm?0')">    day</a>
+		<a href=# onclick="clearTimeout(timer); interval=450;    updateVideo('goesr/video-two-day.webm?0')">48 hours</a>
+		<a href=# onclick="clearTimeout(timer); interval=3600;   updateVideo('goesr/video-week.webm?0')">   week</a>
+		<a href=# onclick="clearTimeout(timer); interval=3600;   updateVideo('goesr/video-month.webm?0')">  month</a>
+		<a href=# onclick="clearTimeout(timer); interval=604800; updateVideo('goesr/video-year.webm?0')">   year</a>
 	</div>
 	<div class="top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
 	<div class="bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
-	<div class="bottom right"><a href=https://github.com/bnitkin/goesr-video>source</a></div>
+	<div class="bottom right"><span id=loading>Loading...</span><a href=https://github.com/bnitkin/goesr-video>source</a></div>
 	<video id=goes-video autoplay loop src="goesr/video-two-day.webm?0" type="video/webm">
 <!--		<source id=goes-video-source src="goesr/video-two-day.webm?0" type="video/webm"> -->
 	Your browser does not appear to be HTML5 capable. (Video tag support is missing.) Please try with a newer browser.

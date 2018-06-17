@@ -1,0 +1,65 @@
+<head>
+<meta charset="UTF-8"> 
+<title>Blue Marble (GOES-R imagery)</title>
+<!-- The following script handles downloading new videos periodically.
+When the interval runs out, updateVideo() downloads the latest copy of the animation into
+goes-video-hidden. Once goes-video-hidden is fully loaded, the src is transferred into goes-video.
+The switcharoo prevents the main video pane from going black during reloads. -->
+<script>
+window.onload = function() {
+	console.log('In onload function');
+	var image = document.getElementById("goes-image");
+	timer = setInterval(function() {
+		image.src = image.src.split("?")[0] + "?" + new Date().getTime();
+			}, 5*60*1000);
+	loading.style.visibility = 'hidden';
+}
+</script>
+<style>
+body {
+	height:100%;
+	background-color:black;
+       	padding:0;
+       	margin:0;
+	display:grid;
+}
+div {
+	font-family:sans;
+	font-size: small;
+	color: white;
+	position:fixed;
+	width:50%
+}
+div.top    { top:   0px; }
+div.bottom { bottom:0px; }
+div.right  { right: 0px; text-align: right; }
+div.left   { left:  0px; text-align: left; }
+span       { padding-right:5px; }
+img {
+	object-fit:contain;
+       	max-width: 97%;
+       	max-height:97%;
+       	display:block;
+       	margin:auto;
+}
+a:hover, a:visited, a:link, a:active{
+	color: white;
+	text-decoration: none;
+	padding: 0 8px;
+	margin: 2px;
+	background:#222;
+}
+a:hover {
+	background: #444;
+}
+</style>
+</head>
+<body>
+	<div class="top left">
+	<a href=/>animated</a>
+	</div>
+	<div class="top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
+	<div class="bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
+	<div class="bottom right"><span id=loading>Loading...</span><a href=https://github.com/bnitkin/goesr-video>source</a></div>
+	<img id=goes-image src="goesr/truecolor-latest.jpg?0" />
+</body>

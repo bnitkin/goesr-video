@@ -210,6 +210,11 @@ def makeImage(lastTime = 0):
     truecolor.save(STORAGE+'/truecolor-{}.jpg'.format(timestamp))
     truecolor.resize(THUMB_SIZE).save(STORAGE+'/truecolor-thumb-{}.jpg'.format(timestamp))
 
+    # Make a symlink pointing to the latest for javascript to point at.
+    try: os.remove(                                           STORAGE+'/truecolor-latest.jpg')
+    except FileNotFoundError: pass
+    os.symlink(STORAGE+'/truecolor-{}.jpg'.format(timestamp), STORAGE+'/truecolor-latest.jpg')
+
     print('Done!', timer.lap())
     print('Total time:', timer.total())
     print()
