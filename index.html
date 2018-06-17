@@ -1,4 +1,10 @@
-<head><title>Blue Marble (GOES-R imagery)</title>
+<head>
+<meta charset="UTF-8"> 
+<title>Blue Marble (GOES-R imagery)</title>
+<!-- The following script handles downloading new videos periodically.
+When the interval runs out, updateVideo() downloads the latest copy of the animation into
+goes-video-hidden. Once goes-video-hidden is fully loaded, the src is transferred into goes-video.
+The switcharoo prevents the main video pane from going black during reloads. -->
 <script>
 var video = 0
 var interval = 450; // 7.5 minutes
@@ -7,15 +13,34 @@ var timer = 0
 function updateVideo() {
 	console.log('Interval:', interval);
 	console.log('Video:   ', video.src);
-	video.src = video.src.split("?")[0] + "?" + new Date().getTime();
+	hidden.src = video.src.split("?")[0] + "?" + new Date().getTime();
+	console.log('Reloading video:', video.src);
+	timer = setTimeout(updateVideo, interval*1000);
+	console.log('Done');
 }
 
 window.onload = function() {
 	console.log('In onload function');
-	video = document.getElementById("goes-video");
-
-	timer = setInterval(updateVideo, interval*1000);
+	video  = document.getElementById("goes-video");
+	hidden  = document.getElementById("goes-video-hidden");
+	timer = setTimeout(updateVideo, interval*1000);
 	console.log('Timer:', timer);
+
+	//When the main video is ready, play it.
+	video.addEventListener('loadeddata', function() {
+			if(video.readyState == 4) {
+			console.log('Playing video:', video.src);
+			video.play();
+			}
+			});
+
+	// When the hidden video is ready, copy it into the main video.
+	hidden.addEventListener('loadeddata', function() {
+			if(hidden.readyState == 4) {
+			console.log('Hidden ready:', hidden.src);
+			video.src = hidden.src
+			}
+			});
 }
 </script>
 <style>
@@ -27,16 +52,15 @@ body {
 }
 div {
 	font-family:sans;
+	font-size: small;
 	color: white;
 	position:fixed;
 	width:50%
 }
-
 div.top    { top:   0px; }
 div.bottom { bottom:0px; }
 div.right  { right: 0px; text-align: right; }
 div.left   { left:  0px; text-align: left; }
-
 video {
 	object-fit:contain;
        	max-width:100%;
@@ -44,8 +68,10 @@ video {
        	display:block;
        	margin:0 auto;
 	padding-top: 5px;
+	padding-bottom: 5px;
 	
 }
+#goes-video-hidden {display:none}
 a:hover, a:visited, a:link, a:active{
 	color: white;
 	text-decoration: none;
@@ -54,25 +80,24 @@ a:hover, a:visited, a:link, a:active{
 	background:#222;
 }
 a:hover {
-	/*text-decoration: underline;*/
 	background: #444;
 }
 </style>
 </head>
 <body>
 	<div class="top left">
-		duration: <a href=# onclick="clearInterval(timer); interval=450;    timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-day.mp4'">day</a>
-		<a href=# onclick="clearInterval(timer); interval=450;    timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-two-day.mp4'">48 hours</a>
-		<a href=# onclick="clearInterval(timer); interval=3600;   timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-week.mp4'">week</a>
-		<a href=# onclick="clearInterval(timer); interval=604800; timer=setInterval(updateVideo, interval*1000); video.src='goesr/video-year.mp4'">year</a>
+		duration:
+	       	<a href=# onclick="clearTimeout(timer); interval=450;    video.src='goesr/video-day.webm?0'; updateVideo()">day</a>
+		<a href=# onclick="clearTimeout(timer); interval=450;    video.src='goesr/video-two-day.webm?0'; updateVideo()">48 hours</a>
+		<a href=# onclick="clearTimeout(timer); interval=3600;   video.src='goesr/video-week.webm?0'; updateVideo()">week</a>
+		<a href=# onclick="clearTimeout(timer); interval=604800; video.src='goesr/video-year.webm?0'; updateVideo()">year</a>
 	</div>
-	<div class="top right">
-		brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a>
-	</div>
-	<div class="bottom left">data via <a href="https://www.goes-r.gov/">GOES-R</a></div>
+	<div class="top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
+	<div class="bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
 	<div class="bottom right"><a href=https://github.com/bnitkin/goesr-video>source</a></div>
-	<video autoplay loop >
-		<source id=goes-video src="goesr/video-two-day.mp4" type="video/mp4">
-			Your browser does not appear to be HTML5 capable. (Video tag support is missing.) Please try with a newer browser.
+	<video id=goes-video autoplay loop src="goesr/video-two-day.webm?0" type="video/webm">
+<!--		<source id=goes-video-source src="goesr/video-two-day.webm?0" type="video/webm"> -->
+	Your browser does not appear to be HTML5 capable. (Video tag support is missing.) Please try with a newer browser.
 	</video> 
+	<video id=goes-video-hidden autoplay src="goesr/video-two-day.webm?0" type="video/webm">
 </body>

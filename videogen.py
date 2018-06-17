@@ -4,8 +4,8 @@ import sys, glob, subprocess
 
 FRAMES = 15*24*2 # 2 days of data
 FRAMERATE = '8' # frames per second (real time is four frames per hour)
-SRC =  '/home/bnitkin/goesr/truecolor-thumb-*'
-DEST = '/home/bnitkin/goesr/video-{}.mp4'
+SRC =  '/home/bnitkin/goesr/truecolor-thumb-*.jpg'
+DEST = '/home/bnitkin/goesr/video-{}.webm'
 FRAMES = {'day':     24*4,
           'two-day': 24*4*2,
           'week':    24*4*7,
@@ -21,6 +21,8 @@ def main():
         '-y',                          # Overwrite output path
         '-f', 'image2pipe', '-i', '-', # Read images from stdin
         '-pix_fmt', 'yuv420p',         # Force older pixel format to make Firefox happy.
+        '-c:v', 'libvpx-vp9',
+        '-crf', '30', '-b:v', '0',     # Constant quality (31 is suggested for 1080p)
         DEST.format(sys.argv[1])), stdin=subprocess.PIPE)  # Write to DEST
 
     for path in files:
