@@ -92,7 +92,7 @@ a:hover {
 </style>
 </head>
 <body>
-	<div class="top left">
+	<div class="hide top left">
 		duration:
 	       	<a href=/static.html>                                                                               latest</a>
 	       	<a href=# onclick="clearTimeout(timer); interval=450;    updateVideo('goesr/video-day.webm?0')">    day</a>
@@ -101,9 +101,12 @@ a:hover {
 		<a href=# onclick="clearTimeout(timer); interval=3600;   updateVideo('goesr/video-month.webm?0')">  month</a>
 		<a href=# onclick="clearTimeout(timer); interval=604800; updateVideo('goesr/video-year.webm?0')">   year</a>
 	</div>
-	<div class="top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
-	<div class="bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
-	<div class="bottom right"><span id=loading>Loading...</span><a href=https://github.com/bnitkin/goesr-video>source</a></div>
+	<div class="hide top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
+	<div class="hide bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
+	<div class="hide bottom right">
+		<span id=loading>Loading...</span>
+		<a href=# onclick="var nodeList = document.getElementsByClassName('hide'); for(var x of nodeList){x.style.visibility='hidden'}">hide</a>
+		<a href=https://github.com/bnitkin/goesr-video>source</a></div>
 	<video id=goes-video autoplay loop src="goesr/video-two-day.webm?0" type="video/webm">
 <!--		<source id=goes-video-source src="goesr/video-two-day.webm?0" type="video/webm"> -->
 	Your browser does not appear to be HTML5 capable. (Video tag support is missing.) Please try with a newer browser.

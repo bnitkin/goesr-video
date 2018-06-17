@@ -55,11 +55,14 @@ a:hover {
 </style>
 </head>
 <body>
-	<div class="top left">
+	<div class="hide top left">
 	<a href=/>animated</a>
 	</div>
-	<div class="top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
-	<div class="bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
-	<div class="bottom right"><span id=loading>Loading...</span><a href=https://github.com/bnitkin/goesr-video>source</a></div>
+	<div class="hide top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
+	<div class="hide bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
+	<div class="hide bottom right">
+		<span id=loading>Loading...</span>
+		<a href=# onclick="var nodeList = document.getElementsByClassName('hide'); for(var x of nodeList){x.style.visibility='hidden'}">hide</a>
+		<a href=https://github.com/bnitkin/goesr-video>source</a></div>
 	<img id=goes-image src="goesr/truecolor-latest.jpg?0" />
 </body>
