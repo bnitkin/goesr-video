@@ -1,0 +1,17 @@
+# Remove png files in /home/bnitkin/goesr that are more than a week old.
+15 3 * * *   bnitkin  find /home/bnitkin/goesr -ctime +80 -iname '*.png' -exec rm {} \;
+
+# Automatically restart the service if it crashes.
+*/5 * * * *   bnitkin  pidof -x GOES16.sci.py >/dev/null || /home/bnitkin/GOES16.sci.py >> /home/bnitkin/log.txt
+
+# Automatically restart the HTTP server if it crashes. (Must be root to permit binding to port 80.)
+*/5 * * * *   root     pidof -x goesServer.py >/dev/null || cd /home/bnitkin; /home/bnitkin/goesServer.py >> /home/bnitkin/server.txt
+
+# Use Make to automatically detect when files change. Updating every few minutes ensures low lag.
+*/2 * * * *   bnitkin  make -f /home/bnitkin/video.mk TIME=day
+*/2 * * * *   bnitkin  make -f /home/bnitkin/video.mk TIME=two-day
+
+# Rebuild longer videos less often (weekly is hourly; monthly is daily; annual is weekly)
+33  * * * *   bnitkin  make -f /home/bnitkin/video.mk TIME=week
+48  1 * * tue bnitkin  make -f /home/bnitkin/video.mk TIME=month
+12  1 5 * *   bnitkin  make -f /home/bnitkin/video.mk TIME=year
