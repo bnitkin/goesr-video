@@ -10,8 +10,8 @@ window.onload = function() {
 	console.log('In onload function');
 	var image = document.getElementById("goes-image");
 	timer = setInterval(function() {
-		image.src = image.src.split("?")[0] + "?" + new Date().getTime();
-			}, 5*60*1000);
+		image.src = image.src.split("#")[0] + "#" + new Date().getTime();
+			}, 120*1000);
 	loading.style.visibility = 'hidden';
 }
 </script>
@@ -24,7 +24,7 @@ body {
 	display:grid;
 }
 div {
-	font-family:sans;
+	font-family:sans-serif;
 	font-size: small;
 	color: white;
 	position:fixed;
@@ -47,16 +47,19 @@ a:hover, a:visited, a:link, a:active{
 	text-decoration: none;
 	padding: 0 8px;
 	margin: 2px;
-	background:#222;
+	background:#333;
 }
 a:hover {
-	background: #444;
+	background: #666;
 }
 </style>
 </head>
 <body>
 	<div class="hide top left">
+	resolution:
 	<a href=/>animated</a>
+	<a href=# onclick="document.getElementById('goes-image').src='goesr/truecolor-thumb-latest.jpg#0'">    normal</a>
+	<a href=# onclick="document.getElementById('goes-image').src='goesr/truecolor-latest.jpg#0'">           hi-res</a>
 	</div>
 	<div class="hide top right"   >brought to you by <a href=https://nitk.in>Ben Nitkin</a> and hosted by <a href=https://cloud.google.com/free/docs/frequently-asked-questions>Google</a></div>
 	<div class="hide bottom left" >data via <a href="https://www.goes-r.gov/">GOES-R</a>/<a href=https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16>Google</a></div>
@@ -64,5 +67,5 @@ a:hover {
 		<span id=loading>Loading...</span>
 		<a href=# onclick="var nodeList = document.getElementsByClassName('hide'); for(var x of nodeList){x.style.visibility='hidden'}">hide</a>
 		<a href=https://github.com/bnitkin/goesr-video>source</a></div>
-	<img id=goes-image src="goesr/truecolor-latest.jpg?0" />
+	<img id=goes-image src="goesr/truecolor-thumb-latest.jpg#0" />
 </body>

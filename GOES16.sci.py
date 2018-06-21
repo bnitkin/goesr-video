@@ -214,6 +214,10 @@ def makeImage(lastTime = 0):
     try: os.remove(                                           STORAGE+'/truecolor-latest.jpg')
     except FileNotFoundError: pass
     os.symlink(STORAGE+'/truecolor-{}.jpg'.format(timestamp), STORAGE+'/truecolor-latest.jpg')
+    try: os.remove(                                           STORAGE+'/truecolor-thumb-latest.jpg')
+    except FileNotFoundError: pass
+    os.symlink(STORAGE+'/truecolor-thumb-{}.jpg'.format(timestamp), STORAGE+'/truecolor-thumb-latest.jpg')
+
 
     print('Done!', timer.lap())
     print('Total time:', timer.total())
