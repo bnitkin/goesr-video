@@ -16,7 +16,10 @@ function updateVideo(src) {
 	src = src || video.src;
 	console.log('Interval:', interval);
 	console.log('Video:   ', video.src);
+	// Webm is well supported in Chrome and Firefox
 	hidden.src = src.split("#")[0] + "#" + new Date().getTime();
+	// Support mp4 as a fallback (only for Apple products)
+	//document.getElementById("goes-video-source").src = hidden.src.replace('webm', 'mp4')
 	console.log('Reloading video:', hidden.src);
 	timer = setTimeout(updateVideo, interval*1000);
 	loading.innerHTML = 'Loading '+hidden.src.split('#')[0]
@@ -49,6 +52,10 @@ window.onload = function() {
 			video.src = hidden.src
 			}
 			});
+	if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
+		loading.style.visibility = 'visible';
+		loading.innerHTML = 'Video is unsupported in Safari. Try out the static page, or use Chrome/Firefox for video.'
+	}
 }
 </script>
 <style>
@@ -107,9 +114,13 @@ a:hover {
 		<span id=loading>Loading...</span>
 		<a href=# onclick="var nodeList = document.getElementsByClassName('hide'); for(var x of nodeList){x.style.visibility='hidden'}">hide</a>
 		<a href=https://github.com/bnitkin/goesr-video>source</a></div>
-	<video id=goes-video autoplay loop src="goesr/video-two-day.webm#0" type="video/webm">
-<!--		<source id=goes-video-source src="goesr/video-two-day.webm#0" type="video/webm"> -->
+	<video id=goes-video autoplay muted loop src="goesr/video-two-day.webm#0" type="video/webm">
+<!-- Firefox and Chrome are happy with webm, but Chrome needs an mp4. -->
+<!-- The auto-reload magic works better when setting video.src, rather than changing the source src.-->
+<!-- So webm is provided as a first choice, with mp4 as a fallback. I'm unsure whether auto-reload -->
+<!-- works with the mp4 file (because it's in the source instead of src). -->
+	<!--<source id=goes-video-source src="goesr/video-two-day.mp4#0" type="video/mp4">-->
 	Your browser does not appear to be HTML5 capable. (Video tag support is missing.) Please try with a newer browser.
 	</video> 
-	<video id=goes-video-hidden autoplay src="" type="video/webm">
+	<video id=goes-video-hidden autoplay muted src="goesr/video-two-day.webm#0" type="video/webm"></video>
 </body>
