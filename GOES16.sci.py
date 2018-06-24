@@ -104,10 +104,12 @@ def getLatestData(channel, obj, last=''):
         try:
             downloadFile(obj['mediaLink'], filename, obj['size'])
             print(' - Converting netcdf4 to netcdf3', timer.lap())
-            with NamedTemporaryFile() as scratchNC:
+            with NamedTemporaryFile(delete=False) as scratchNC:
                 # Use nccopy to convert, then copy the netcdf3 file over the existing path.
                 subprocess.check_call(('nccopy', '-3', filename, scratchNC.name))
-                subprocess.check_call(('cp',     '-f', scratchNC.name, filename))
+                print(' - Moving back to original location', timer.lap())
+                os.remove(                filename)
+                os.rename(scratchNC.name, filename)
         except:
             # If something goes wrong, kill the file rather than leaving a corrupted download.
             os.remove(filename)
