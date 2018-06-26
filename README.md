@@ -3,12 +3,11 @@ This is a simple video-generator leveraging the wonders of free online stuff.
 It uses the GOES-R red, blue, and veggie bands to generate a near-realtime, true-color
 video of the past few days of weather.
 
-With the most recent GOES satellites, NOAA has been posting near-realtime imagery to a
-Google Cloud bucket for public use
-(https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16)
+With the most recent GOES satellites, NOAA has been posting near-realtime imagery to this
+[Google Cloud bucket](https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16) for public use.
 
 Google also offers a very small VPS as a free demo, which I used to set the project up.
-See it live at bluemarble.nitk.in!
+See it live at [bluemarble.nitk.in](http://bluemarble.nitk.in)!
 
 People usually discuss the frameworks they used, but this is pretty basic.
 It uses the latest in Javascript, HTML, and Python,
