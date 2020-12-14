@@ -51,23 +51,28 @@ Finally, the images are combined
    - Scale down to a thumbnail size for video-ing
 
 ## Video generation
-The video generation is as dumb as a rock. `Cron` periodically calls a makefile;
-the makefile checks whether the videos need regeneration, and they're rebuilt if so.
+The video generation is as dumb as a rock. `cron` periodically calls the video generator
+with `day/twoday/week/month/year` as an argument.
 
-Refer to the `crontab` sample for cron rules. The makefile `video.mk` allows cron to
-call the script every few minutes without undue overhead.
-
-The script `videogen.py` looks at all the files in the output directory, finds the newest
-(up to a configured limit) and compiles them into a video with ffmpeg.
+The generator uses `ffmpeg` to build a video in `/tmp`; it errors out if the video
+exists. (This prevents the generator from stepping on itself under high system loads)
+Once generated, the video is moved from `/tmp` to `DEST`. Moves are atomic, which
+ensures the file in `DEST` is always a valid video.
 
 The length of the video and output filename are configured programatically by the FRAMES
 dictionary. `day`, `two-day`, `week`, `month`, and `year` all do about what you'd expect.
+
+Notably, `month` and `year` find the image nearest noon for each day. They
+create a video with one frame per day, rather than six frames per hour.
 
 ## HTTP Server
 The final component of the whole setup is a simple Python HTTP server. You could use Apache
 (or Nginx, or anything else), but on a disk-constrained server, I chose to use what was installed.
 
-It just hosts `index.html` and the videos.
+Compared to the standard Python server, it provides better support for `If-Modified-Since`
+and threading.
+
+It just hosts `index.html`, `static.html` and the videos.
 
 The HTML file allows a user to select between the different generated videos, and automatically
 refreshes the videos to keep them near realtime.

@@ -1,10 +1,9 @@
 <head>
 <meta charset="UTF-8"> 
 <title>Blue Marble (GOES-R imagery)</title>
-<!-- The following script handles downloading new videos periodically.
-When the interval runs out, updateVideo() downloads the latest copy of the animation into
-goes-video-hidden. Once goes-video-hidden is fully loaded, the src is transferred into goes-video.
-The switcharoo prevents the main video pane from going black during reloads. -->
+<!-- The following script handles downloading new images periodically.
+When the interval runs out, the image SRC is updated with a new anchor tag,
+encouraging the browser to reload from the source. -->
 <script>
 window.onload = function() {
 	console.log('In onload function');
