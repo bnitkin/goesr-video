@@ -8,22 +8,25 @@ from datetime import datetime
 FRAMES = 15*24*2 # 2 days of data
 SRC =  '/home/bnitkin/goesr/truecolor-thumb-*.jpg'
 DEST = '/home/bnitkin/goesr/video-{}.webm'
-FRAMES = {'day':     24*4-1,
-          'two-day': 24*4*2-1,
-          'week':    24*4*7-1,
+FRAMES = {'day':     24*6-1,
+          'two-day': 24*6*2-1,
+          'week':    24*6*7-1,
           'month':   31,
           'year':    365}
 
 # frames per second (real time is four frames per hour)
-RATE   = {'day':     '8',
-          'two-day': '8',
-          'week':    '16',
+RATE   = {'day':     '12',
+          'two-day': '12',
+          'week':    '24',
           'month':   '4',
           'year':    '8'}
 
 
 def main():
     files = sorted(glob.glob(SRC))
+    crf = '31'
+    if sys.argv[1] == 'week': crf = '45'
+    if sys.argv[1] == 'year': crf = '37'
 
     # for month and year settings, use daily pictures instead of 15-minutes.
     # This uses some cleverness to find the file closest to noon for each day.
@@ -31,6 +34,7 @@ def main():
         # Build a sorted list of file mtime and path
         files = [(os.path.getmtime(f), f) for f in files]
         files_daily = []
+	# 1640Z is local noon for GOES-East.
         noon = datetime.utcnow().replace(hour=16, minute=40, second=0).timestamp()
         for index in range(FRAMES[sys.argv[1]]):
             ideal_time = noon - 3600*24*index
@@ -59,7 +63,7 @@ def main():
 # Settings to make it go a litte faster, but at a quality tradeoff.
 #        '-cpu-used', '2',
 #        '-speed', '3',
-        '-crf', '31', '-b:v', '0',     # Constant quality (31 is suggested for 1080p)
+        '-crf', crf, '-b:v', '0',     # Constant quality (31 is suggested for 1080p)
         tmpfile,
 # Uncomment the below to add a mp4 output. Should work on Safari, but doesn't...
 #        '-c:v', 'h264', '-c:a', 'aac',

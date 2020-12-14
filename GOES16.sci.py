@@ -23,7 +23,7 @@ TEMP = '/tmp'
 STORAGE = '/home/bnitkin/goesr'
 # URL to fetch directory listings from
 #        https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/    2018/070/21/OR_ABI-L2-CMIPF-M3C01
-DIR_LIST = 'https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/{date:%Y/%j/%H}/OR_ABI-L2-CMIPF-M3C{channel:02}'
+DIR_LIST = 'https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/{date:%Y/%j/%H}/OR_ABI-L2-CMIPF-M6C{channel:02}'
 # Size to chunk downloads into, bytes
 CHUNK_SIZE = 5000000 # 5MB
 # Final size of the generated images. Refer to the "Channel 2 is X by Y" message for the full size.
