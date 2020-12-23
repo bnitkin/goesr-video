@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -u
+"""Create true-color imagery from GOES-R using the Google Compute data NOAA manages."""
 import gc
 import os
 
@@ -21,8 +22,6 @@ from PIL import Image, ImageOps, ImageChops
 
 # Path to keep images and thumbnails long-term
 STORAGE = '/home/bnitkin/goesr'
-# TODO: Delete this.
-STORAGE = '/home/ben/projects/goesr/images'
 
 # URL to fetch directory listings from
 #        https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/    2018/070/21/OR_ABI-L2-CMIPF-M3C01
@@ -53,22 +52,25 @@ TIME_FUZZ = 60
 # Internally, timestamps are accurate to 1/10th of a second. Convert to that.
 TIME_FUZZ *= 10
 
-class Timer(object):
+class Timer():
     """A simple lap timer. On each call of lap(), it
     returns the elapsed time since the last call."""
     def __init__(self):
+        """Setup the timer."""
         self.last = datetime.datetime.now()
         self.start = self.last
     def lap(self):
+        """Drop a marker. Return the time since lap() was last called."""
         old = self.last
         self.last = datetime.datetime.now()
         return (self.last - old).total_seconds()
     def total(self):
+        """Get time since timer was started."""
         self.lap()
         return (self.last - self.start).total_seconds()
     def delay(self, seconds):
-        # Delays for the number of seconds since the last lap.
-        # Reset the lap counter on exit.
+        """Delays for the number of seconds since the last lap.
+        Reset the lap counter on exit."""
         sleep_time = seconds - self.lap()
         if sleep_time > 0:
             print('Sleeping for {} seconds'.format(sleep_time))
@@ -105,6 +107,8 @@ def get_next_url(channel, timestamp):
             return image
 
 def download_file(src, dest, size=0):
+    """Downloads a file, given a source and destination.
+    Basically wget, but native."""
     handle = urlopen(src, timeout=15)
     chunk = 'not an empty string'
 
