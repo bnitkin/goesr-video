@@ -105,6 +105,7 @@ def get_next_url(channel, timestamp):
     for image in image_list:
         if get_time(image) > timestamp + TIME_FUZZ:
             return image
+    return image
 
 def download_file(src, dest, size=0):
     """Downloads a file, given a source and destination.
