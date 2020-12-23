@@ -22,7 +22,6 @@ from PIL import Image, ImageOps, ImageChops
 
 # Path to keep images and thumbnails long-term
 STORAGE = '/home/bnitkin/goesr'
-STORAGE = '/home/ben/projects/goesr/images'
 
 # URL to fetch directory listings from
 #        https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/    2018/070/21/OR_ABI-L2-CMIPF-M3C01
@@ -109,7 +108,7 @@ def get_next_url(channel, timestamp):
 def download_file(src, dest, size=0):
     """Downloads a file, given a source and destination.
     Basically wget, but native."""
-    handle = urlopen(src, timeout=15)
+    handle = urlopen(src, timeout=30)
     chunk = 'not an empty string'
 
     print(' - Downloading{: 0.1f}MB: {}'.format(int(size)/1E6, src))
