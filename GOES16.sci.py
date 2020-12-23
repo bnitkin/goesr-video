@@ -22,6 +22,7 @@ from PIL import Image, ImageOps, ImageChops
 
 # Path to keep images and thumbnails long-term
 STORAGE = '/home/bnitkin/goesr'
+STORAGE = '/home/ben/projects/goesr/images'
 
 # URL to fetch directory listings from
 #        https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/    2018/070/21/OR_ABI-L2-CMIPF-M3C01
@@ -48,9 +49,6 @@ POLL_TIME = 5*60
 # Images are timestamped with a lot of precision; layers can come in a few seconds
 # from each other, even as part of the same scan
 TIME_FUZZ = 60
-
-# Internally, timestamps are accurate to 1/10th of a second. Convert to that.
-TIME_FUZZ *= 10
 
 class Timer():
     """A simple lap timer. On each call of lap(), it
@@ -103,7 +101,8 @@ def get_next_url(channel, timestamp):
     # timestamp is greater than the provided one.
     image = {}
     for image in image_list:
-        if get_time(image) > timestamp + TIME_FUZZ:
+        # Internal timestamp is tenths of second.
+        if get_time(image) > timestamp + datetime.timedelta(seconds=TIME_FUZZ):
             return image
     return image
 
@@ -173,8 +172,13 @@ def get_time(handle):
     Then we strip off the 'c' and '.nc'. The final timestamp is:
     20203580049598
     YYYYDDDHHMMSSmmm
+    That's converted into a Datetime object.
     """
-    return int(handle['name'].split('_')[-1][1:-3])
+    text = handle['name'].split('_')[-1][1:-3]
+    stamp = datetime.datetime.strptime(text, '%Y%j%H%M%S%f')
+    # One digit of microsecond (tenths of second) isn't very useful.
+    stamp -= datetime.timedelta(microseconds=stamp.microsecond)
+    return stamp
 
 def make_image(last_time=0):
     """Put it all together. Download three images, compose them into color, and
@@ -191,9 +195,9 @@ def make_image(last_time=0):
     timestamp = obj[1]['time']
 
     # Check that all timestamps are "close"
-    if ((-TIME_FUZZ <= (obj[1]['time'] - obj[2]['time']) <= TIME_FUZZ)
-         and (-TIME_FUZZ <= (obj[1]['time'] - obj[3]['time']) <= TIME_FUZZ)
-         and (-TIME_FUZZ <= (obj[2]['time'] - obj[3]['time']) <= TIME_FUZZ)):
+    if ((-TIME_FUZZ <= (obj[1]['time'] - obj[2]['time']).total_seconds() <= TIME_FUZZ)
+         and (-TIME_FUZZ <= (obj[1]['time'] - obj[3]['time']).total_seconds() <= TIME_FUZZ)
+         and (-TIME_FUZZ <= (obj[2]['time'] - obj[3]['time']).total_seconds() <= TIME_FUZZ)):
         print('Images are time-synchronous ({}, {}, and {})'.format(
             obj[1]['time'],
             obj[2]['time'],
@@ -213,9 +217,7 @@ def make_image(last_time=0):
 
     # Getting to work - insert a break.
     print()
-    print('Layers were captured {} ago.'.format(
-            datetime.datetime.utcnow() -
-            datetime.datetime.strptime(str(last_time), '%Y%j%H%M%S%f')))
+    print('Layers were captured {} ago.'.format(datetime.datetime.utcnow() - last_time))
 
     print('Processing blue layer')
     blue = process_layer(obj[1]) # Load Channel 1 - Blue Visible
@@ -247,14 +249,14 @@ def make_image(last_time=0):
     #geocolor.save(STORAGE+'/geocolor-{}.png'.format(timestamp))
 
     truecolor = ImageChops.add(ImageChops.add(red, green), blue)
-    truecolor.save(STORAGE+'/truecolor-{}.jpg'.format(timestamp))
-    truecolor.resize(THUMB_SIZE).save(STORAGE+'/truecolor-thumb-{}.jpg'.format(timestamp))
+    truecolor.save(STORAGE+'/truecolor-{}.jpg'.format(timestamp.isoformat()))
+    truecolor.resize(THUMB_SIZE).save(STORAGE+'/truecolor-thumb-{}.jpg'.format(timestamp.isoformat()))
 
     # Make a symlink pointing to the latest for javascript to point at.
     # Symlink + move is atomic.
-    os.symlink(STORAGE+'/truecolor-{}.jpg'.format(timestamp),
+    os.symlink(STORAGE+'/truecolor-{}.jpg'.format(timestamp.isoformat()),
                STORAGE+'/truecolor-latest.jpg.tmp')
-    os.symlink(STORAGE+'/truecolor-thumb-{}.jpg'.format(timestamp),
+    os.symlink(STORAGE+'/truecolor-thumb-{}.jpg'.format(timestamp.isoformat()),
                STORAGE+'/truecolor-thumb-latest.jpg.tmp')
     os.rename(STORAGE+'/truecolor-latest.jpg.tmp', STORAGE+'/truecolor-latest.jpg')
     os.rename(STORAGE+'/truecolor-thumb-latest.jpg.tmp', STORAGE+'/truecolor-thumb-latest.jpg')
@@ -269,7 +271,7 @@ def main():
     """Simple mainloop to call the image generator every 5 mins."""
     # Bogus but correctly-sized timestamp
     # (First day of 2000; stroke of midnight)
-    last_time = 20010010000000
+    last_time = datetime.datetime(2000, 1, 1)
     while True:
         # Every five minutes, try to build a new image set.
         # make_image will return early if there's no new data.
