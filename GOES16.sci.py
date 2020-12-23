@@ -276,6 +276,6 @@ def main():
         # make_image will return early if there's no new data.
         timer = Timer()
         last_time = make_image(last_time)
-        timer.delay(2*60)
+        timer.delay(5*60)
 if __name__ == '__main__':
     main()
