@@ -18,14 +18,14 @@ from PIL import Image, ImageOps, ImageChops
 
 # Format for URLs (spaces added by yours truly)
 #                                                         <sensor>-<level>-<product short name>/<year>/<julian day>/<hour>/OR_<sensor>-<level>-<product short name>-M<scanning mode>-C<channel>-G<GOES Satellite>-s<start time>  _e<end time>    _c<central time>.nc
-#https://storage.cloud.google.com/gcp-public-data-goes-16/ABI     -L2     -CMIPF               /2018  /070         /20    /OR_ABI     -L2     -CMIPF               -M3               C02       _G16              _s20180702000416_e20180702011183_c20180702011253.nc
+#https://storage.cloud.google.com/gcp-public-data-goes-19/ABI     -L2     -CMIPF               /2018  /070         /20    /OR_ABI     -L2     -CMIPF               -M3               C02       _G19              _s20180702000416_e20180702011183_c20180702011253.nc
 
 # Path to keep images and thumbnails long-term
 STORAGE = '/home/bnitkin/goesr'
 
 # URL to fetch directory listings from
-#        https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/    2018/070/21/OR_ABI-L2-CMIPF-M3C01
-DIR_LIST = 'https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-16/o?prefix=ABI-L2-CMIPF/{date:%Y/%j/%H}/OR_ABI-L2-CMIPF-M6C{channel:02}'
+#        https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-19/o?prefix=ABI-L2-CMIPF/    2018/070/21/OR_ABI-L2-CMIPF-M3C01
+DIR_LIST = 'https://www.googleapis.com/storage/v1/b/gcp-public-data-goes-19/o?prefix=ABI-L2-CMIPF/{date:%Y/%j/%H}/OR_ABI-L2-CMIPF-M6C{channel:02}'
 
 # Size to chunk downloads into, bytes
 CHUNK_SIZE = 5000000 # 5MB
@@ -133,14 +133,14 @@ def process_layer(obj):
         subprocess.check_call(('nccopy', '-3', download4.name, download3.name))
 
         print(' - Reading netCDF', timer.lap())
-        with netcdf.netcdf_file(download3.name, 'r') as g16nc:
+        with netcdf.netcdf_file(download3.name, 'r') as g19nc:
             print(' - Extracting reflectance', timer.lap())
-            reflectance = g16nc.variables['CMI'][:] # Extract the reflectance
+            reflectance = g19nc.variables['CMI'][:] # Extract the reflectance
 
             zoom_factor = [FINAL_SIZE[0]/reflectance.shape[0], FINAL_SIZE[1]/reflectance.shape[1]]
             print(' - Channel is {} by {}; resizing by {}'.format(
-                g16nc.variables['CMI'].shape[0],
-                g16nc.variables['CMI'].shape[1],
+                g19nc.variables['CMI'].shape[0],
+                g19nc.variables['CMI'].shape[1],
                 zoom_factor),
                   timer.lap())
             reflectance = zoom(reflectance, zoom_factor, order=1)
@@ -165,7 +165,7 @@ def process_layer(obj):
 def get_time(handle):
     """Convert a JSON data descriptor to a datestamp.
     'name' is of the form:
-    ABI-L2-CMIPF/2020/358/00/OR_ABI-L2-CMIPF-M6C03_G16_s20203580040209_e20203580049517_c20203580049598.nc
+    ABI-L2-CMIPF/2020/358/00/OR_ABI-L2-CMIPF-M6C03_G19_s20203580040209_e20203580049517_c20203580049598.nc
     So splitting on underscores and taking the last gets:
     c20203580049598.nc
     Then we strip off the 'c' and '.nc'. The final timestamp is:
