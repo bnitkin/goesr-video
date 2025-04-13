@@ -12,6 +12,7 @@ import datetime
 import subprocess
 import numpy as np
 #from scipy.io import netcdf
+from scipy.signal import decimate
 from scipy.ndimage import zoom
 import netCDF4
 
@@ -132,15 +133,17 @@ def process_layer(obj):
         print(' - Reading netCDF', timer.lap())
         with netCDF4.Dataset(download4.name, 'r', format="NETCDF4") as g19nc:
             print(' - Extracting reflectance', timer.lap())
-            reflectance = g19nc.variables['CMI'][:] # Extract the reflectance
+            reflectance = g19nc.variables['CMI'] # Extract the reflectance
 
-            zoom_factor = [FINAL_SIZE[0]/reflectance.shape[0], FINAL_SIZE[1]/reflectance.shape[1]]
-            print(' - Channel is {} by {}; resizing by {}'.format(
+            decimate_factor = int(reflectance.shape[0]/FINAL_SIZE[0] + 0.5)
+            print(' - Channel is {} by {}; resizing by 1/{}'.format(
                 g19nc.variables['CMI'].shape[0],
                 g19nc.variables['CMI'].shape[1],
-                zoom_factor),
-                  timer.lap())
-            reflectance = zoom(reflectance, zoom_factor, order=1)
+                decimate_factor),
+                timer.lap())
+
+            reflectance = decimate(reflectance, decimate_factor, n=0, ftype='fir', zero_phase=False)
+            #reflectance = reflectance.reshape(-1, decimate_factor).max(1)
 
     print(' - Ensuring all values are positive', timer.lap())
     np.maximum(reflectance, 0, reflectance)
@@ -157,6 +160,7 @@ def process_layer(obj):
     gc.collect()
 
     print(' - Layer time:', timer.total())
+    exit()
     return image
 
 def get_time(handle):
