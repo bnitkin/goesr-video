@@ -11,8 +11,9 @@ import datetime
 
 import subprocess
 import numpy as np
-from scipy.io import netcdf
+#from scipy.io import netcdf
 from scipy.ndimage import zoom
+import netCDF4
 
 from PIL import Image, ImageOps, ImageChops
 
@@ -91,9 +92,9 @@ def get_next_url(channel, timestamp):
     If the provided timestamp is the latest, it's returned."""
     # Query for current and prior hour. Should give 6-12 image results.
     prior = DIR_LIST.format(
-        date=datetime.datetime.utcnow() - datetime.timedelta(seconds=3600), channel=channel)
+        date=datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=3600), channel=channel)
     current = DIR_LIST.format(
-        date=datetime.datetime.utcnow(), channel=channel)
+        date=datetime.datetime.now(datetime.UTC), channel=channel)
     #print('Fetching file list:', current)
     image_list = get_image_list(prior) + get_image_list(current)
     # Generate a timestamp for each image. Return the first image whose
@@ -128,12 +129,8 @@ def process_layer(obj):
     # Then delete the sources.
     with NamedTemporaryFile() as download3, NamedTemporaryFile() as download4:
         download_file(obj['mediaLink'], download4, obj['size'])
-        # netcdf3 reads much faster than netcdf4. Not sure why.
-        print(' - Converting netcdf4 to netcdf3', timer.lap())
-        subprocess.check_call(('nccopy', '-3', download4.name, download3.name))
-
         print(' - Reading netCDF', timer.lap())
-        with netcdf.netcdf_file(download3.name, 'r') as g19nc:
+        with netCDF4.Dataset(download4.name, 'r', format="NETCDF4") as g19nc:
             print(' - Extracting reflectance', timer.lap())
             reflectance = g19nc.variables['CMI'][:] # Extract the reflectance
 
@@ -174,7 +171,7 @@ def get_time(handle):
     That's converted into a Datetime object.
     """
     text = handle['name'].split('_')[-1][1:-3]
-    stamp = datetime.datetime.strptime(text, '%Y%j%H%M%S%f')
+    stamp = datetime.datetime.strptime(text, '%Y%j%H%M%S%f').replace(tzinfo=datetime.timezone.utc)
     # One digit of microsecond (tenths of second) isn't very useful.
     stamp -= datetime.timedelta(microseconds=stamp.microsecond)
     return stamp
@@ -216,7 +213,7 @@ def make_image(last_time=0):
 
     # Getting to work - insert a break.
     print()
-    print('Layers were captured {} ago.'.format(datetime.datetime.utcnow() - last_time))
+    print('Layers were captured {} ago.'.format(datetime.datetime.now(datetime.UTC) - last_time))
 
     print('Processing blue layer')
     blue = process_layer(obj[1]) # Load Channel 1 - Blue Visible
@@ -270,7 +267,7 @@ def main():
     """Simple mainloop to call the image generator every 5 mins."""
     # Bogus but correctly-sized timestamp
     # (First day of 2000; stroke of midnight)
-    last_time = datetime.datetime(2000, 1, 1)
+    last_time = datetime.datetime(2000, 1, 1, tzinfo=datetime.UTC)
     while True:
         # Every five minutes, try to build a new image set.
         # make_image will return early if there's no new data.
