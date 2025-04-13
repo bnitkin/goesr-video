@@ -93,9 +93,9 @@ def get_next_url(channel, timestamp):
     If the provided timestamp is the latest, it's returned."""
     # Query for current and prior hour. Should give 6-12 image results.
     prior = DIR_LIST.format(
-        date=datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=3600), channel=channel)
+        date=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(seconds=3600), channel=channel)
     current = DIR_LIST.format(
-        date=datetime.datetime.now(datetime.UTC), channel=channel)
+        date=datetime.datetime.now(datetime.timezone.utc), channel=channel)
     #print('Fetching file list:', current)
     image_list = get_image_list(prior) + get_image_list(current)
     # Generate a timestamp for each image. Return the first image whose
@@ -217,7 +217,7 @@ def make_image(last_time=0):
 
     # Getting to work - insert a break.
     print()
-    print('Layers were captured {} ago.'.format(datetime.datetime.now(datetime.UTC) - last_time))
+    print('Layers were captured {} ago.'.format(datetime.datetime.now(datetime.timezone.utc) - last_time))
 
     print('Processing blue layer')
     blue = process_layer(obj[1]) # Load Channel 1 - Blue Visible
@@ -271,7 +271,7 @@ def main():
     """Simple mainloop to call the image generator every 5 mins."""
     # Bogus but correctly-sized timestamp
     # (First day of 2000; stroke of midnight)
-    last_time = datetime.datetime(2000, 1, 1, tzinfo=datetime.UTC)
+    last_time = datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc)
     while True:
         # Every five minutes, try to build a new image set.
         # make_image will return early if there's no new data.
